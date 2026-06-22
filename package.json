@@ -1,0 +1,36 @@
+{
+  "name": "bem-wind",
+  "version": "0.2.1",
+  "description": "Install the BEM-Wind Claude skill — write semantic BEM CSS using Tailwind @apply directives.",
+  "bin": {
+    "bem-wind": "bin/bem-wind.js"
+  },
+  "files": [
+    "bin",
+    "skill"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-skill",
+    "skill",
+    "bem",
+    "tailwind",
+    "css",
+    "design-system",
+    "scss"
+  ],
+  "author": "Taryn Stark",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tarynstark/bem-wind.git"
+  },
+  "homepage": "https://github.com/tarynstark/bem-wind#readme",
+  "bugs": {
+    "url": "https://github.com/tarynstark/bem-wind/issues"
+  },
+  "engines": {
+    "node": ">=16.7.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "bem-wind",
+  "description": "BEM-Wind — a Claude skill for writing semantic BEM CSS with Tailwind @apply.",
+  "owner": {
+    "name": "Taryn Stark",
+    "email": "taryns@hey.com"
+  },
+  "plugins": [
+    {
+      "name": "bem-wind",
+      "source": "./",
+      "description": "Write, refactor, and review UI CSS using the BEM-Wind methodology.",
+      "version": "0.2.1",
+      "author": {
+        "name": "Taryn Stark"
+      },
+      "homepage": "https://github.com/tarynstark/bem-wind#readme",
+      "license": "MIT",
+      "keywords": [
+        "css",
+        "bem",
+        "tailwind",
+        "design-system",
+        "claude-skill"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "bem-wind",
+  "description": "Write, refactor, and review UI CSS using the BEM-Wind methodology — semantic BEM component classes composed from Tailwind utilities inside @apply directives.",
+  "version": "0.2.1",
+  "author": {
+    "name": "Taryn Stark",
+    "email": "taryns@hey.com"
+  },
+  "homepage": "https://github.com/tarynstark/bem-wind#readme",
+  "repository": "https://github.com/tarynstark/bem-wind",
+  "license": "MIT",
+  "keywords": [
+    "css",
+    "bem",
+    "tailwind",
+    "design-system",
+    "claude-skill"
+  ],
+  "skills": [
+    "./skill/bem-wind"
+  ]
+}
