@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BEM-WIND — a Claude skill for semantic BEM + Tailwind CSS</title>
+  <meta name="description" content="A Claude Code skill for writing semantic BEM CSS with Tailwind @apply. Install via npx or /plugin." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind Play CDN — dogfood BEM-Wind (@apply) in a single static file -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            blue:   '#131b86',   /* page */
+            ink:    '#ffffff',
+            muted:  '#ccd2ff',
+            accent: '#7df0ff',   /* used sparingly */
+            gold:   '#ffe46b',
+          },
+          fontFamily: {
+            mono:      ['"IBM Plex Mono"', 'monospace'],
+            editorial: ['"PP Editorial New"', 'Georgia', 'serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- BEM-Wind components: semantic classes, all styling inside @apply -->
+  <style type="text/tailwindcss">
+    .bw-page        { @apply min-h-screen bg-blue text-ink font-mono antialiased; }
+
+    /* Nav */
+    .bw-nav         { @apply fixed top-0 inset-x-0 z-40 flex items-center gap-10 px-8 py-6; }
+    .bw-nav__brand  { @apply font-mono font-semibold text-sm tracking-[0.25em]; }
+    .bw-nav__menu   { @apply flex items-center gap-7 text-xs tracking-[0.25em] uppercase; }
+    .bw-nav__item   { @apply text-ink/70 hover:text-ink transition-colors; }
+
+    /* Asymmetric divider — solid, full bleed */
+    .bw-divider     { @apply hidden lg:block fixed inset-y-0 left-[54%] w-0 border-l border-ink/25 pointer-events-none z-[31]; }
+
+    /* Progressive blur — content frosts as it scrolls up into the header */
+    .bw-fade {
+      @apply fixed top-0 inset-x-0 z-30 pointer-events-none;
+      height: 150px;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
+      mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
+      background: linear-gradient(to bottom, #131b86 0%, rgba(19,27,134,.5) 45%, rgba(19,27,134,0) 100%);
+    }
+
+    /* Turbine as a framed, floating art plate */
+    .bw-turbine     {
+      @apply hidden lg:flex fixed inset-y-0 my-auto right-[5vw] h-[66vh] w-[34vw] items-center justify-center text-ink/70 pointer-events-none overflow-hidden border border-ink/40 bg-[#101674];
+      transform: translateZ(0);
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      will-change: transform;
+    }
+
+    /* Single scrolling text column */
+    .bw-content     { @apply max-w-xl px-8 pt-32 pb-24 lg:ml-[9vw] lg:mr-[44vw]; }
+    .bw-block       { @apply mb-20; }
+
+    /* Type scale */
+    .bw-eyebrow     { @apply text-xs tracking-[0.3em] uppercase text-muted mb-5; }
+    .bw-title       { @apply font-editorial font-extralight italic text-6xl sm:text-7xl tracking-tight leading-[1.0]; }
+    .bw-rule        { @apply my-7 w-24 border-t border-dashed border-ink/30; }
+    .bw-lede        { @apply text-lg text-ink/95 leading-relaxed; }
+    .bw-h2          { @apply font-mono font-semibold text-lg uppercase tracking-[0.2em]; }
+    .bw-h2 + .bw-rule { @apply my-5 w-16; }
+    .bw-p           { @apply text-[15px] font-medium text-ink leading-relaxed mb-4; }
+    .bw-dim         { @apply text-sm text-muted leading-relaxed; }
+
+    /* Command (ASCII-framed CTA) */
+    .bw-cmd         { @apply flex items-center justify-between gap-4 border border-dashed border-ink/40 bg-ink/5 backdrop-blur-md px-5 py-4; }
+    .bw-cmd__text   { @apply text-sm sm:text-base text-ink; }
+    .bw-cmd__copy   { @apply shrink-0 border-l border-ink/20 pl-4 text-xs tracking-widest uppercase text-muted hover:text-ink transition-colors cursor-pointer; }
+
+    /* Code */
+    .bw-code        { @apply whitespace-pre overflow-x-auto border border-ink/15 bg-black/15 backdrop-blur-md px-5 py-4 text-[13px] leading-relaxed; }
+
+    .bw-rules       { @apply space-y-3 text-[15px] leading-relaxed; }
+    .bw-rules__n    { @apply text-accent mr-1; }
+    .bw-link        { @apply text-accent underline-offset-4 hover:underline; }
+    .bw-footer      { @apply border-t border-dashed border-ink/20 pt-6 text-sm text-muted; }
+  </style>
+
+  <style>
+    html, body { background: #131b86; }
+    #turbine-3d { position: relative; width: 100%; height: 100%; overflow: hidden; }
+    #turbine-3d > * { background: transparent !important; color: #fff !important; }
+    /* AsciiEffect hard-codes the <td> to the full size w/ overflow:hidden — let it shrink-wrap the text instead */
+    #turbine-3d td { width: auto !important; height: auto !important; overflow: visible !important; padding: 0 !important; }
+  </style>
+</head>
+
+<body>
+  <div class="bw-page">
+    <!-- NAV -->
+    <nav class="bw-nav">
+      <span class="bw-nav__brand">BEM·WIND</span>
+      <span class="bw-nav__menu">
+        <a class="bw-nav__item" href="#setup">Setup</a>
+        <a class="bw-nav__item" href="#examples">Examples</a>
+      </span>
+    </nav>
+
+    <!-- Progressive blur into the header -->
+    <div class="bw-fade" aria-hidden="true"></div>
+
+    <!-- TURBINE — framed art plate -->
+    <!-- TURBINE (placeholder — final visual TBD) -->
+    <aside class="bw-turbine" aria-hidden="true">
+      <div id="turbine-3d"></div>
+    </aside>
+
+    <!-- SINGLE SCROLLING COLUMN -->
+    <main class="bw-content">
+      <!-- hero -->
+      <section class="bw-block">
+        <p class="bw-eyebrow">A Claude Code skill</p>
+        <h1 class="bw-title">BEM·WIND</h1>
+        <hr class="bw-rule" />
+        <p class="bw-lede">Semantic BEM CSS with Tailwind <span class="text-accent">@apply</span>. Keep the design system — lose the utility soup in your markup.</p>
+        <div class="bw-cmd mt-8">
+          <code class="bw-cmd__text"><span class="text-muted">$</span> npx bem-wind add-skill --global</code>
+          <button class="bw-cmd__copy" data-copy="npx bem-wind add-skill --global">Copy</button>
+        </div>
+        <p class="mt-3 bw-dim">This page is built with BEM-Wind.</p>
+      </section>
+
+      <!-- setup -->
+      <section id="setup" class="bw-block">
+        <h2 class="bw-h2">Setup</h2>
+        <hr class="bw-rule" />
+        <p class="bw-p">Install the skill into your <span class="text-accent">.claude/skills</span>:</p>
+        <div class="bw-cmd mb-3">
+          <code class="bw-cmd__text">npx bem-wind add-skill --global</code>
+          <button class="bw-cmd__copy" data-copy="npx bem-wind add-skill --global">Copy</button>
+        </div>
+        <p class="bw-dim mb-10">Drop <span class="text-accent">--global</span> to install into the current project instead.</p>
+
+        <p class="bw-p">Or add it from inside Claude Code:</p>
+        <pre class="bw-code text-muted mb-3">/plugin marketplace add tarynstark/bem-wind
+/plugin install bem-wind@bem-wind</pre>
+        <p class="bw-dim">Then invoke it any time with <span class="text-gold">/bem-wind</span>.</p>
+      </section>
+
+      <!-- the method -->
+      <section class="bw-block">
+        <h2 class="bw-h2">The method</h2>
+        <hr class="bw-rule" />
+        <ul class="bw-rules">
+          <li><span class="bw-rules__n">01</span> Everything inside <span class="text-accent">@apply</span> — compose from Tailwind, no raw CSS.</li>
+          <li><span class="bw-rules__n">02</span> Prefix every class with a 2–4 char project prefix.</li>
+          <li><span class="bw-rules__n">03</span> BEM naming — <span class="text-accent">[prefix]-block__element--modifier</span>.</li>
+          <li><span class="bw-rules__n">04</span> Prefer standard Tailwind values; brackets only when needed.</li>
+          <li><span class="bw-rules__n">05</span> No utilities in markup — components carry semantic names only.</li>
+        </ul>
+      </section>
+
+      <!-- examples -->
+      <section id="examples" class="bw-block">
+        <h2 class="bw-h2">Examples</h2>
+        <hr class="bw-rule" />
+        <p class="bw-p text-muted">Before — utility soup in the markup:</p>
+        <pre class="bw-code text-muted mb-8">&lt;button class="inline-flex items-center
+  justify-center px-4 py-2 rounded-lg
+  bg-blue-500 text-white transition-colors
+  hover:bg-blue-600 active:bg-blue-700 ..."&gt;
+  Get started
+&lt;/button&gt;</pre>
+
+        <p class="bw-p">After — semantic markup, styling in the stylesheet:</p>
+        <pre class="bw-code mb-6">&lt;button class="<span class="text-gold">ds-button ds-button--primary</span>"&gt;Get started&lt;/button&gt;
+
+<span class="text-accent">.ds-button</span> {
+  @apply inline-flex items-center justify-center;
+  @apply px-4 py-2 rounded-lg transition-colors;
+  &amp;--primary {
+    @apply bg-blue-500 text-white;
+    @apply hover:bg-blue-600 active:bg-blue-700;
+  }
+}</pre>
+        <p class="bw-dim">Same pixels. Full patterns — cards, inputs, modals, tokens — ship inside the skill.</p>
+      </section>
+
+      <footer class="bw-footer">
+        <p>
+          <a class="bw-link" href="https://github.com/tarynstark/bem-wind" target="_blank" rel="noopener">GitHub</a>
+          &nbsp;·&nbsp;
+          <a class="bw-link" href="https://www.npmjs.com/package/bem-wind" target="_blank" rel="noopener">npm</a>
+          &nbsp;·&nbsp;
+          <a class="bw-link" href="https://taryn.design" target="_blank" rel="noopener">taryn.design</a>
+        </p>
+        <p class="mt-2">MIT © Taryn Stark</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- copy buttons -->
+  <script>
+    document.querySelectorAll('[data-copy]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copy);
+          const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => (btn.textContent = old), 1200);
+        } catch (_) {}
+      });
+    });
+  </script>
+
+  <!-- 3D turbine rendered live as ASCII (Three.js AsciiEffect) -->
+  <script type="importmap">
+    { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { AsciiEffect } from 'https://unpkg.com/three@0.160.0/examples/jsm/effects/AsciiEffect.js';
+
+    // dithered gradient backdrop inside the frame — ordered Bayer dither between two shades of the page blue
+    (function ditherBackdrop() {
+      const box = document.querySelector('.bw-turbine');
+      if (!box) return;
+      const w = 180, h = 260;
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      const ctx = cv.getContext('2d');
+      const top = [42, 54, 182], bot = [24, 32, 116];         // compressed range — legible bottom
+      const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+      const id = ctx.createImageData(w, h);
+      for (let y = 0; y < h; y++) {
+        const t = y / (h - 1);
+        for (let x = 0; x < w; x++) {
+          const thr = (bayer[(y & 3) * 4 + (x & 3)] + 0.5) / 16;
+          const c = t > thr ? bot : top;
+          const o = (y * w + x) * 4;
+          id.data[o] = c[0]; id.data[o + 1] = c[1]; id.data[o + 2] = c[2]; id.data[o + 3] = 255;
+        }
+      }
+      ctx.putImageData(id, 0, 0);
+      box.style.backgroundImage = `url(${cv.toDataURL()})`;
+      box.style.backgroundSize = 'cover';
+      box.style.imageRendering = 'pixelated';
+    })();
+
+    const mount = document.getElementById('turbine-3d');
+    if (mount) {
+      let W = mount.clientWidth || 420, H = mount.clientHeight || 800;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(34, W / H, 0.1, 100);
+      camera.position.set(7.8, 5.3, 11);   // zoomed in so the scene fills the frame edge-to-edge
+      camera.lookAt(0, 3.2, 0);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+      const key = new THREE.DirectionalLight(0xffffff, 1.15); key.position.set(5, 9, 7); scene.add(key);
+      const fill = new THREE.DirectionalLight(0xffffff, 0.4); fill.position.set(-6, 3, -4); scene.add(fill);
+
+      const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65, flatShading: true });
+
+      // low-poly rolling terrain (flatter under the turbine so it stays grounded)
+      const groundMat = new THREE.MeshStandardMaterial({ color: 0x9aa3c8, roughness: 0.95, flatShading: true });
+      const groundGeo = new THREE.PlaneGeometry(12, 9, 16, 12);
+      {
+        const p = groundGeo.attributes.position;
+        for (let i = 0; i < p.count; i++) {
+          const x = p.getX(i), y = p.getY(i);
+          const falloff = Math.min(1, Math.max(0, (Math.hypot(x, y) - 1.6) / 3));
+          const h = (Math.sin(x * 0.7) * 0.55 + Math.cos(y * 0.8 + 1) * 0.5 + Math.sin((x + y) * 0.5) * 0.35) * falloff;
+          p.setZ(i, h);
+        }
+        groundGeo.computeVertexNormals();
+      }
+      const ground = new THREE.Mesh(groundGeo, groundMat);
+      ground.rotation.x = -Math.PI / 2; ground.position.y = -0.15; scene.add(ground);
+
+      const turbine = new THREE.Group(); scene.add(turbine);
+
+      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.46, 0.3, 8), mat);
+      base.position.y = 0.15; turbine.add(base);
+      const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.3, 5, 10), mat);
+      tower.position.y = 2.6; turbine.add(tower);
+
+      const head = new THREE.Group(); head.position.y = 5.1; turbine.add(head);
+      head.add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 1.0), mat));
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.35, 8), mat);
+      hub.rotation.x = Math.PI / 2; hub.position.z = 0.6; head.add(hub);
+
+      const rotor = new THREE.Group(); rotor.position.z = 0.72; head.add(rotor);
+      const bladeGeo = new THREE.CylinderGeometry(0.02, 0.22, 2.7, 4);
+      for (let i = 0; i < 3; i++) {
+        const arm = new THREE.Group();
+        const blade = new THREE.Mesh(bladeGeo, mat);
+        blade.position.y = 1.45; blade.scale.z = 0.4;
+        arm.add(blade); arm.rotation.z = i * (Math.PI * 2 / 3); rotor.add(arm);
+      }
+
+      // subtle drifting clouds (soft, behind the turbine)
+      const cloudMat = new THREE.MeshStandardMaterial({ color: 0xaab2e6, roughness: 1, flatShading: true });
+      function makeCloud(cx, cy, cz, s) {
+        const g = new THREE.Group();
+        const puffs = [[0, 0, 0, 1], [0.9, 0.1, 0.1, 0.7], [-0.85, 0.05, -0.1, 0.7], [0.25, 0.4, 0, 0.6]];
+        for (const [px, py, pz, ps] of puffs) {
+          const puff = new THREE.Mesh(new THREE.IcosahedronGeometry(0.7 * ps, 0), cloudMat);
+          puff.position.set(px, py, pz); puff.scale.y = 0.55; g.add(puff);
+        }
+        g.position.set(cx, cy, cz); g.scale.setScalar(s); scene.add(g); return g;
+      }
+      const clouds = [makeCloud(-3.6, 6.2, -1.5, 1.0), makeCloud(3.8, 7.4, -2.5, 0.8)];
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(W, H); renderer.setClearColor(0x000000, 0);
+
+      const effect = new AsciiEffect(renderer, ' .:-=+*#%@', { invert: false, resolution: 0.22 });
+      effect.setSize(W, H);
+      const host = effect.domElement;
+      Object.assign(host.style, {
+        color: '#ffffff', backgroundColor: 'transparent',
+        width: '100%', height: '100%', overflow: 'hidden',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      });
+      mount.appendChild(host);
+
+      let sized = false;
+      function animate(t) {
+        rotor.rotation.z = t * 0.0006;
+        clouds.forEach((c, i) => { c.position.x += i % 2 ? 0.004 : 0.006; if (c.position.x > 7) c.position.x = -7; });
+        effect.render(scene, camera);
+        if (!sized && (host.querySelector('table') || {}).offsetWidth) { sized = true; applySize(); }
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+
+      const applySize = () => {
+        W = mount.clientWidth || W; H = mount.clientHeight || H;
+        camera.aspect = W / H; camera.updateProjectionMatrix();
+        renderer.setSize(W, H); effect.setSize(W, H);
+        // scale the inner character grid to cover the frame (centered; excess clipped)
+        const grid = host.querySelector('table') || host.firstElementChild;
+        if (grid && grid.offsetWidth && grid.offsetHeight) {
+          grid.style.transformOrigin = 'center center';
+          grid.style.transform = `scale(${Math.max(W / grid.offsetWidth, H / grid.offsetHeight)})`;
+        }
+      };
+      // fires once on attach (after layout) and on every resize → canvas fills the frame
+      new ResizeObserver(applySize).observe(mount);
+    }
+  </script>
+</body>
+</html>
