@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BEM-WIND — a Claude skill for semantic BEM + Tailwind CSS</title>
+  <title>BEM·WIND · a Claude skill for semantic BEM + Tailwind CSS</title>
   <meta name="description" content="A Claude Code skill for writing semantic BEM CSS with Tailwind @apply. Install via npx or /plugin." />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,15 +17,15 @@
       theme: {
         extend: {
           colors: {
-            blue:   '#131b86',   /* page */
+            blue:   '#000b9f',   /* page */
             ink:    '#ffffff',
             muted:  '#ccd2ff',
-            accent: '#7df0ff',   /* used sparingly */
-            gold:   '#ffe46b',
+            accent: '#ff5c8a',   /* the single accent */
           },
           fontFamily: {
             mono:      ['"IBM Plex Mono"', 'monospace'],
             editorial: ['"PP Editorial New"', 'Cormorant', 'Georgia', 'serif'],
+            mondwest:  ['"PP Mondwest"', 'Mondwest', 'Georgia', 'serif'],
           },
         },
       },
@@ -38,7 +38,7 @@
 
     /* Nav */
     .bw-nav         { @apply fixed top-0 inset-x-0 z-40 flex items-center gap-10 px-8 py-6; }
-    .bw-nav__brand  { @apply font-mono font-semibold text-sm tracking-[0.25em]; }
+    .bw-nav__brand  { @apply font-mondwest text-base tracking-wide; }
     .bw-nav__menu   { @apply flex items-center gap-7 text-xs tracking-[0.25em] uppercase; }
     .bw-nav__item   { @apply text-ink/70 hover:text-ink transition-colors; }
 
@@ -53,48 +53,66 @@
       backdrop-filter: blur(12px);
       -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
       mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 100%);
-      background: linear-gradient(to bottom, #131b86 0%, rgba(19,27,134,.5) 45%, rgba(19,27,134,0) 100%);
+      background: linear-gradient(to bottom, #000b9f 0%, rgba(0,11,159,.5) 45%, rgba(0,11,159,0) 100%);
     }
 
     /* Turbine as a framed, floating art plate */
     .bw-turbine     {
-      @apply hidden lg:flex fixed inset-y-0 my-auto right-[5vw] h-[66vh] w-[34vw] items-center justify-center text-ink/70 pointer-events-none overflow-hidden border border-ink/40 bg-[#101674];
+      @apply hidden lg:flex fixed inset-y-0 my-auto right-[5vw] h-[66vh] w-[34vw] items-center justify-center text-ink/70 pointer-events-none select-none overflow-hidden border border-ink/40 bg-[#0a1480];
       transform: translateZ(0);
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       will-change: transform;
     }
+    .bw-turbine__canvas { @apply relative w-full h-full overflow-hidden; }
+    .bw-turbine-mobile  {
+      @apply lg:hidden relative w-full h-[120px] overflow-hidden rounded-lg border border-ink/40 select-none pointer-events-none mb-16;
+      transform: translateZ(0);
+      will-change: transform;
+    }
 
     /* Single scrolling text column */
     .bw-content     { @apply max-w-xl px-8 pt-32 pb-24 lg:ml-[9vw] lg:mr-[44vw]; }
-    .bw-block       { @apply mb-20; }
+    .bw-block       { @apply mb-16; }
 
     /* Type scale */
-    .bw-eyebrow     { @apply text-xs tracking-[0.3em] uppercase text-muted mb-5; }
-    .bw-title       { @apply font-editorial font-extralight italic text-6xl sm:text-7xl tracking-tight leading-[1.0]; }
-    .bw-rule        { @apply my-7 w-24 border-t border-dashed border-ink/30; }
+    .bw-eyebrow     { @apply mt-3 text-xs tracking-[0.3em] uppercase text-muted mb-5; }
+    .bw-title       { @apply font-mondwest text-6xl sm:text-7xl leading-[1.05]; }
+    .bw-rule        { @apply my-7 w-full border-t border-ink/30; }
     .bw-lede        { @apply text-lg text-ink/95 leading-relaxed; }
-    .bw-h2          { @apply font-mono font-semibold text-lg uppercase tracking-[0.2em]; }
-    .bw-h2 + .bw-rule { @apply my-5 w-16; }
+    .bw-h2          { @apply font-mondwest text-2xl uppercase tracking-[0.08em]; }
+    .bw-h2 + .bw-rule { @apply my-5; }
     .bw-p           { @apply text-[15px] font-medium text-ink leading-relaxed mb-4; }
+    .bw-p--muted    { @apply text-muted; }
+    .bw-mark        { @apply text-accent; }
     .bw-dim         { @apply text-sm text-muted leading-relaxed; }
+    .bw-dim--gap    { @apply mb-10; }
 
     /* Command (ASCII-framed CTA) */
-    .bw-cmd         { @apply flex items-center justify-between gap-4 border border-dashed border-ink/40 bg-ink/5 backdrop-blur-md px-5 py-4; }
+    .bw-cmd         { @apply flex items-center justify-between gap-4 rounded-lg border border-dashed border-ink/40 bg-ink/5 backdrop-blur-md px-5 py-4 mb-3; }
+    .bw-cmd--lead   { @apply mt-8; }
     .bw-cmd__text   { @apply text-sm sm:text-base text-ink; }
-    .bw-cmd__copy   { @apply shrink-0 border-l border-ink/20 pl-4 text-xs tracking-widest uppercase text-muted hover:text-ink transition-colors cursor-pointer; }
+    .bw-cmd__prompt { @apply text-muted; }
+    .bw-cmd__copy   { @apply shrink-0 flex items-center border-l border-ink/20 pl-4 text-muted hover:text-ink transition-colors cursor-pointer; }
+    .bw-cmd__copy svg { @apply h-4 w-4; }
 
     /* Code */
-    .bw-code        { @apply whitespace-pre overflow-x-auto border border-ink/15 bg-black/15 backdrop-blur-md px-5 py-4 text-[13px] leading-relaxed; }
+    .bw-code        { @apply whitespace-pre overflow-x-auto rounded-lg border border-ink/15 bg-black/15 backdrop-blur-md px-5 py-4 text-[13px] leading-relaxed mb-6; }
+    .bw-code--muted { @apply text-muted; }
 
     .bw-rules       { @apply space-y-3 text-[15px] leading-relaxed; }
-    .bw-rules__n    { @apply text-accent mr-1; }
-    .bw-link        { @apply text-accent underline-offset-4 hover:underline; }
-    .bw-footer      { @apply border-t border-dashed border-ink/20 pt-6 text-sm text-muted; }
+    .bw-rules li    { @apply flex gap-2.5; }
+    .bw-rules__n    { @apply text-accent shrink-0; }
+    .bw-link        { @apply text-accent underline underline-offset-4 decoration-accent/40 hover:decoration-accent transition-colors; }
+    .bw-footer      { @apply border-t border-ink/30 pt-6 text-sm text-muted; }
+    .bw-footer p + p { @apply mt-2; }
   </style>
 
   <style>
-    html, body { background: #131b86; }
+    /* Self-hosted PP Mondwest (licensed webfonts) */
+    @font-face { font-family: 'PP Mondwest'; src: url('fonts/PPMondwest-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: 'PP Mondwest'; src: url('fonts/PPMondwest-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+    html, body { background: #000b9f; }
     /* Cap the layout to a centered max-width stage so content + turbine don't drift apart on wide displays */
     @media (min-width: 1024px) {
       .bw-content { margin-left: max(9vw, calc(50vw - 720px)) !important; }
@@ -104,10 +122,9 @@
         height: min(66vh, 640px) !important;
       }
     }
-    #turbine-3d { position: relative; width: 100%; height: 100%; overflow: hidden; }
-    #turbine-3d > * { background: transparent !important; color: #fff !important; }
-    /* AsciiEffect hard-codes the <td> to the full size w/ overflow:hidden — let it shrink-wrap the text instead */
-    #turbine-3d td { width: auto !important; height: auto !important; overflow: visible !important; padding: 0 !important; }
+    /* AsciiEffect overrides — third-party <table> output that can't be expressed with utilities */
+    .bw-turbine__canvas > * { background: transparent !important; color: #fff !important; }
+    .bw-turbine__canvas td { width: auto !important; height: auto !important; overflow: visible !important; padding: 0 !important; }
   </style>
 </head>
 
@@ -128,39 +145,49 @@
     <!-- TURBINE — framed art plate -->
     <!-- TURBINE (placeholder — final visual TBD) -->
     <aside class="bw-turbine" aria-hidden="true">
-      <div id="turbine-3d"></div>
+      <div id="turbine-3d" class="bw-turbine__canvas"></div>
     </aside>
 
     <!-- SINGLE SCROLLING COLUMN -->
     <main class="bw-content">
       <!-- hero -->
       <section class="bw-block">
-        <p class="bw-eyebrow">A Claude Code skill</p>
         <h1 class="bw-title">BEM·WIND</h1>
+        <p class="bw-eyebrow">A Claude Code skill</p>
         <hr class="bw-rule" />
-        <p class="bw-lede">Semantic BEM CSS with Tailwind <span class="text-accent">@apply</span>. Keep the design system — lose the utility soup in your markup.</p>
-        <div class="bw-cmd mt-8">
-          <code class="bw-cmd__text"><span class="text-muted">$</span> npx bem-wind add-skill --global</code>
-          <button class="bw-cmd__copy" data-copy="npx bem-wind add-skill --global">Copy</button>
+        <p class="bw-lede">Semantic BEM CSS with Tailwind <span class="bw-mark">@apply</span>. Keep the design system, lose the utility soup in your markup.</p>
+        <div class="bw-cmd bw-cmd--lead">
+          <code class="bw-cmd__text"><span class="bw-cmd__prompt">$</span> npx bem-wind add-skill --global</code>
+          <button class="bw-cmd__copy" data-copy="npx bem-wind add-skill --global" aria-label="Copy command"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path></svg></button>
         </div>
-        <p class="mt-3 bw-dim">This page is built with BEM-Wind.</p>
       </section>
+
+      <!-- mobile turbine banner — shown below the hero under the lg breakpoint -->
+      <aside class="bw-turbine-mobile" aria-hidden="true">
+        <div id="turbine-3d-mobile" class="bw-turbine__canvas"></div>
+      </aside>
 
       <!-- setup -->
       <section id="setup" class="bw-block">
         <h2 class="bw-h2">Setup</h2>
         <hr class="bw-rule" />
-        <p class="bw-p">Install the skill into your <span class="text-accent">.claude/skills</span>:</p>
-        <div class="bw-cmd mb-3">
-          <code class="bw-cmd__text">npx bem-wind add-skill --global</code>
-          <button class="bw-cmd__copy" data-copy="npx bem-wind add-skill --global">Copy</button>
+        <p class="bw-p">Install the skill into your <span class="bw-mark">.claude/skills</span>:</p>
+        <div class="bw-cmd">
+          <code class="bw-cmd__text"><span class="bw-cmd__prompt">$</span> npx bem-wind add-skill --global</code>
+          <button class="bw-cmd__copy" data-copy="npx bem-wind add-skill --global" aria-label="Copy command"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path></svg></button>
         </div>
-        <p class="bw-dim mb-10">Drop <span class="text-accent">--global</span> to install into the current project instead.</p>
+        <p class="bw-dim bw-dim--gap">Drop <span class="bw-mark">--global</span> to install into the current project instead.</p>
 
-        <p class="bw-p">Or add it from inside Claude Code:</p>
-        <pre class="bw-code text-muted mb-3">/plugin marketplace add tarynstark/bem-wind
-/plugin install bem-wind@bem-wind</pre>
-        <p class="bw-dim">Then invoke it any time with <span class="text-gold">/bem-wind</span>.</p>
+        <p class="bw-p">Or add it from inside Claude Code (run each in turn):</p>
+        <div class="bw-cmd">
+          <code class="bw-cmd__text">/plugin marketplace add tarynstark/bem-wind</code>
+          <button class="bw-cmd__copy" data-copy="/plugin marketplace add tarynstark/bem-wind" aria-label="Copy command"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path></svg></button>
+        </div>
+        <div class="bw-cmd">
+          <code class="bw-cmd__text">/plugin install bem-wind@bem-wind</code>
+          <button class="bw-cmd__copy" data-copy="/plugin install bem-wind@bem-wind" aria-label="Copy command"><svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path></svg></button>
+        </div>
+        <p class="bw-dim">Then invoke it any time with <span class="bw-mark">/bem-wind</span>.</p>
       </section>
 
       <!-- the method -->
@@ -168,11 +195,11 @@
         <h2 class="bw-h2">The method</h2>
         <hr class="bw-rule" />
         <ul class="bw-rules">
-          <li><span class="bw-rules__n">01</span> Everything inside <span class="text-accent">@apply</span> — compose from Tailwind, no raw CSS.</li>
-          <li><span class="bw-rules__n">02</span> Prefix every class with a 2–4 char project prefix.</li>
-          <li><span class="bw-rules__n">03</span> BEM naming — <span class="text-accent">[prefix]-block__element--modifier</span>.</li>
-          <li><span class="bw-rules__n">04</span> Prefer standard Tailwind values; brackets only when needed.</li>
-          <li><span class="bw-rules__n">05</span> No utilities in markup — components carry semantic names only.</li>
+          <li><span class="bw-rules__n">01</span><span>Everything inside <span class="bw-mark">@apply</span>: compose from Tailwind, no raw CSS.</span></li>
+          <li><span class="bw-rules__n">02</span><span>Prefix every class with a 2–4 char project prefix.</span></li>
+          <li><span class="bw-rules__n">03</span><span>BEM naming: <span class="bw-mark">[prefix]-block__element--modifier</span>.</span></li>
+          <li><span class="bw-rules__n">04</span><span>Prefer standard Tailwind values; brackets only when needed.</span></li>
+          <li><span class="bw-rules__n">05</span><span>No utilities in markup: components carry semantic names only.</span></li>
         </ul>
       </section>
 
@@ -180,18 +207,18 @@
       <section id="examples" class="bw-block">
         <h2 class="bw-h2">Examples</h2>
         <hr class="bw-rule" />
-        <p class="bw-p text-muted">Before — utility soup in the markup:</p>
-        <pre class="bw-code text-muted mb-8">&lt;button class="inline-flex items-center
+        <p class="bw-p bw-p--muted">Before · utility soup in the markup:</p>
+        <pre class="bw-code bw-code--muted">&lt;button class="inline-flex items-center
   justify-center px-4 py-2 rounded-lg
   bg-blue-500 text-white transition-colors
   hover:bg-blue-600 active:bg-blue-700 ..."&gt;
   Get started
 &lt;/button&gt;</pre>
 
-        <p class="bw-p">After — semantic markup, styling in the stylesheet:</p>
-        <pre class="bw-code mb-6">&lt;button class="<span class="text-gold">ds-button ds-button--primary</span>"&gt;Get started&lt;/button&gt;
+        <p class="bw-p">After · semantic markup, styling in the stylesheet:</p>
+        <pre class="bw-code">&lt;button class="<span class="bw-mark">ds-button ds-button--primary</span>"&gt;Get started&lt;/button&gt;
 
-<span class="text-accent">.ds-button</span> {
+<span class="bw-mark">.ds-button</span> {
   @apply inline-flex items-center justify-center;
   @apply px-4 py-2 rounded-lg transition-colors;
   &amp;--primary {
@@ -199,7 +226,7 @@
     @apply hover:bg-blue-600 active:bg-blue-700;
   }
 }</pre>
-        <p class="bw-dim">Same pixels. Full patterns — cards, inputs, modals, tokens — ship inside the skill.</p>
+        <p class="bw-dim">Same pixels. Full patterns (cards, inputs, modals, tokens) ship inside the skill.</p>
       </section>
 
       <footer class="bw-footer">
@@ -210,18 +237,25 @@
           &nbsp;·&nbsp;
           <a class="bw-link" href="https://taryn.design" target="_blank" rel="noopener">taryn.design</a>
         </p>
-        <p class="mt-2">MIT © Taryn Stark</p>
+        <p>MIT © Taryn Stark</p>
       </footer>
     </main>
   </div>
 
+  <!-- screen-reader status for copy actions -->
+  <div id="copy-status" class="sr-only" aria-live="polite" role="status"></div>
+
   <!-- copy buttons -->
   <script>
+    const CHECK_ICON = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path></svg>';
+    const copyStatus = document.getElementById('copy-status');
     document.querySelectorAll('[data-copy]').forEach((btn) => {
       btn.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(btn.dataset.copy);
-          const old = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => (btn.textContent = old), 1200);
+          if (copyStatus) copyStatus.textContent = 'Copied to clipboard';
+          const old = btn.innerHTML; btn.innerHTML = CHECK_ICON;
+          setTimeout(() => { btn.innerHTML = old; if (copyStatus) copyStatus.textContent = ''; }, 1200);
         } catch (_) {}
       });
     });
@@ -237,12 +271,12 @@
 
     // dithered gradient backdrop inside the frame — ordered Bayer dither between two shades of the page blue
     (function ditherBackdrop() {
-      const box = document.querySelector('.bw-turbine');
-      if (!box) return;
+      const frames = document.querySelectorAll('.bw-turbine, .bw-turbine-mobile');
+      if (!frames.length) return;
       const w = 180, h = 260;
       const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
       const ctx = cv.getContext('2d');
-      const top = [27, 36, 146], bot = [17, 23, 104];         // subtle, quiet texture
+      const top = [40, 52, 188], bot = [6, 18, 140];          // tuned to the deep blue page bg
       const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
       const id = ctx.createImageData(w, h);
       for (let y = 0; y < h; y++) {
@@ -255,19 +289,22 @@
         }
       }
       ctx.putImageData(id, 0, 0);
-      box.style.backgroundImage = `url(${cv.toDataURL()})`;
-      box.style.backgroundSize = 'cover';
-      box.style.imageRendering = 'pixelated';
+      const url = cv.toDataURL();
+      frames.forEach((box) => { box.style.backgroundImage = `url(${url})`; box.style.backgroundSize = 'cover'; box.style.imageRendering = 'pixelated'; });
     })();
 
-    const mount = document.getElementById('turbine-3d');
-    if (mount) {
+    function initTurbine(mount, opts) {
+      if (!mount) return;
+      opts = opts || {};
+      const camPos = opts.camPos || [7.8, 5.3, 11];
+      const camLook = opts.camLook || [0, 3.2, 0];
+      const resolution = opts.resolution || 0.22;
       let W = mount.clientWidth || 420, H = mount.clientHeight || 800;
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(34, W / H, 0.1, 100);
-      camera.position.set(7.8, 5.3, 11);   // zoomed in so the scene fills the frame edge-to-edge
-      camera.lookAt(0, 3.2, 0);
+      camera.position.set(camPos[0], camPos[1], camPos[2]);
+      camera.lookAt(camLook[0], camLook[1], camLook[2]);
 
       scene.add(new THREE.AmbientLight(0xffffff, 0.6));
       const key = new THREE.DirectionalLight(0xffffff, 1.55); key.position.set(5, 9, 7); scene.add(key);
@@ -276,14 +313,20 @@
       const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.65, flatShading: true });
 
       // low-poly rolling terrain (flatter under the turbine so it stays grounded)
+      const layout = opts.turbines || [{ x: 0, z: 0, s: 1, speed: 1 }];
+      const txs = layout.map((t) => t.x);
+
+      // terrain spans the full frame; flattened under each turbine so they stand cleanly
       const groundMat = new THREE.MeshStandardMaterial({ color: 0x9aa3c8, roughness: 0.95, flatShading: true });
-      const groundGeo = new THREE.PlaneGeometry(12, 9, 16, 12);
+      const gw = (opts.ground && opts.ground[0]) || 11, gd = (opts.ground && opts.ground[1]) || 7;
+      const groundGeo = new THREE.PlaneGeometry(gw, gd, Math.max(10, Math.round(gw * 1.1)), Math.round(gd * 1.2));
       {
         const p = groundGeo.attributes.position;
         for (let i = 0; i < p.count; i++) {
           const x = p.getX(i), y = p.getY(i);
-          const falloff = Math.min(1, Math.max(0, (Math.hypot(x, y) - 1.6) / 3));
-          const h = (Math.sin(x * 0.7) * 0.55 + Math.cos(y * 0.8 + 1) * 0.5 + Math.sin((x + y) * 0.5) * 0.35) * falloff;
+          const nearX = Math.min(...txs.map((tx) => Math.abs(x - tx)));
+          const falloff = Math.min(1, Math.max(0, (nearX - 1.3) / 3));
+          const h = (Math.sin(x * 0.7) * 0.32 + Math.cos(y * 0.8 + 1) * 0.28 + Math.sin((x + y) * 0.5) * 0.18) * falloff;
           p.setZ(i, h);
         }
         groundGeo.computeVertexNormals();
@@ -291,25 +334,33 @@
       const ground = new THREE.Mesh(groundGeo, groundMat);
       ground.rotation.x = -Math.PI / 2; ground.position.y = -0.15; scene.add(ground);
 
-      const turbine = new THREE.Group(); scene.add(turbine);
-
-      const base = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.46, 0.3, 8), mat);
-      base.position.y = 0.15; turbine.add(base);
-      const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.3, 5, 10), mat);
-      tower.position.y = 2.6; turbine.add(tower);
-
-      const head = new THREE.Group(); head.position.y = 5.1; turbine.add(head);
-      head.add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 1.0), mat));
-      const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.35, 8), mat);
-      hub.rotation.x = Math.PI / 2; hub.position.z = 0.6; head.add(hub);
-
-      const rotor = new THREE.Group(); rotor.position.z = 0.72; head.add(rotor);
       const bladeGeo = new THREE.CylinderGeometry(0.02, 0.22, 2.7, 4);
-      for (let i = 0; i < 3; i++) {
-        const arm = new THREE.Group();
-        const blade = new THREE.Mesh(bladeGeo, mat);
-        blade.position.y = 1.45; blade.scale.z = 0.4;
-        arm.add(blade); arm.rotation.z = i * (Math.PI * 2 / 3); rotor.add(arm);
+      function makeTurbine() {
+        const g = new THREE.Group();
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.46, 0.3, 8), mat);
+        base.position.y = 0.15; g.add(base);
+        const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.3, 5, 10), mat);
+        tower.position.y = 2.6; g.add(tower);
+        const head = new THREE.Group(); head.position.y = 5.1; g.add(head);
+        head.add(new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.45, 1.0), mat));
+        const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.35, 8), mat);
+        hub.rotation.x = Math.PI / 2; hub.position.z = 0.6; head.add(hub);
+        const rotor = new THREE.Group(); rotor.position.z = 0.72; head.add(rotor);
+        for (let i = 0; i < 3; i++) {
+          const arm = new THREE.Group();
+          const blade = new THREE.Mesh(bladeGeo, mat);
+          blade.position.y = 1.45; blade.scale.z = 0.4;
+          arm.add(blade); arm.rotation.z = i * (Math.PI * 2 / 3); rotor.add(arm);
+        }
+        return { group: g, rotor };
+      }
+      const rotors = [];
+      for (const t of layout) {
+        const { group, rotor } = makeTurbine();
+        group.position.set(t.x, 0, t.z || 0);
+        group.scale.setScalar(t.s || 1);
+        scene.add(group);
+        rotors.push({ rotor, speed: t.speed || 1 });
       }
 
       // subtle drifting clouds (soft, behind the turbine)
@@ -328,7 +379,7 @@
       const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
       renderer.setSize(W, H); renderer.setClearColor(0x000000, 0);
 
-      const effect = new AsciiEffect(renderer, ' .:-=+*#%@', { invert: false, resolution: 0.22 });
+      const effect = new AsciiEffect(renderer, ' .:-=+*#%@', { invert: false, resolution });
       effect.setSize(W, H);
       const host = effect.domElement;
       Object.assign(host.style, {
@@ -338,13 +389,17 @@
       });
       mount.appendChild(host);
 
-      let sized = false;
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let sized = false, frames = 0;
       function animate(t) {
-        rotor.rotation.z = t * 0.0006;
-        clouds.forEach((c, i) => { c.position.x += i % 2 ? 0.004 : 0.006; if (c.position.x > 7) c.position.x = -7; });
+        if (!reduceMotion) {
+          rotors.forEach((r) => { r.rotor.rotation.z = t * 0.0006 * r.speed; });
+          clouds.forEach((c, i) => { c.position.x += i % 2 ? 0.004 : 0.006; if (c.position.x > 7) c.position.x = -7; });
+        }
         effect.render(scene, camera);
         if (!sized && (host.querySelector('table') || {}).offsetWidth) { sized = true; applySize(); }
-        requestAnimationFrame(animate);
+        // when motion is reduced, render a few frames to settle sizing, then stop (static turbine)
+        if (!reduceMotion || ++frames < 30) requestAnimationFrame(animate);
       }
       requestAnimationFrame(animate);
 
@@ -358,10 +413,23 @@
           grid.style.transformOrigin = 'center center';
           grid.style.transform = `scale(${Math.max(W / grid.offsetWidth, H / grid.offsetHeight)})`;
         }
+        effect.render(scene, camera);   // redraw at new size (matters when the loop is stopped for reduced motion)
       };
       // fires once on attach (after layout) and on every resize → canvas fills the frame
       new ResizeObserver(applySize).observe(mount);
     }
+
+    // desktop sidebar (tall) + mobile banner (short, wide)
+    initTurbine(document.getElementById('turbine-3d'), { camPos: [7.8, 5.3, 11], camLook: [0, 3.2, 0], resolution: 0.22 });
+    initTurbine(document.getElementById('turbine-3d-mobile'), {
+      camPos: [3, 3.2, 16], camLook: [0, 2.4, 0], resolution: 0.33,
+      ground: [30, 9],
+      turbines: [
+        { x: -8, z: -1, s: 0.85, speed: 1.15 },
+        { x: 0, z: 0.6, s: 1.0, speed: 0.85 },
+        { x: 8, z: -0.6, s: 0.9, speed: 1.3 },
+      ],
+    });
   </script>
 </body>
 </html>
