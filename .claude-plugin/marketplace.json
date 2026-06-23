@@ -10,7 +10,7 @@
       "name": "bem-wind",
       "source": "./",
       "description": "Write, refactor, and review UI CSS using the BEM-Wind methodology.",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "author": {
         "name": "Taryn Stark"
       },

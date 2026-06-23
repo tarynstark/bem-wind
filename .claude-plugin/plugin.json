@@ -1,7 +1,7 @@
 {
   "name": "bem-wind",
   "description": "Write, refactor, and review UI CSS using the BEM-Wind methodology — semantic BEM component classes composed from Tailwind utilities inside @apply directives.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "author": {
     "name": "Taryn Stark",
     "email": "taryns@hey.com"
