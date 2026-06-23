@@ -12,19 +12,16 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
-
-      # Trusted publishing (OIDC) requires npm >= 11.5.1, newer than what Node 20 ships
-      - name: Update npm
-        run: npm install -g npm@latest
 
       # No token: npm authenticates via GitHub OIDC against the package's
       # configured trusted publisher, and attaches a provenance attestation.
+      # (Node 24 ships npm >= 11.5.1, which OIDC trusted publishing requires.)
       - name: Publish to npm
         run: npm publish --access public
